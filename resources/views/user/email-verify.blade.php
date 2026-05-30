@@ -11,7 +11,7 @@
 
 <div>
     Didn't recieve the link!
-    <form action="" method="post">
+    <form action="{{route('verification.send')}}" method="post">
         @csrf
         <button type="submit" class="btn btn-link ps-0">Send link</button>
     </form>
