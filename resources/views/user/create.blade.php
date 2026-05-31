@@ -24,17 +24,17 @@
                         <div class="invalid-feedback">{{ $message }}</div>
             @enderror
             </div>
-            <div class="mb-3">
+            <d class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <input name="password" type="password" class="form-control @error('password') is-invalid @enderror" id="password" placeholder="Password">
                 @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
                 @enderror            
-            </div>
-            <div class="mb-3">
+            </d   <div class="mb-3">
                 <label for="password_confirmation" class="form-label">Password Confirm</label>
                 <input name="password_confirmation" type="password" class="form-control" id="password_confirmation" placeholder="Password Confirm">
-            </div>
+            </div>iv>
+         
             <button type="submit" class="btn btn-primary">Register</button>
             <a href="{{route('login')}}" class="ms-3">Already registered?</a>
         </form>

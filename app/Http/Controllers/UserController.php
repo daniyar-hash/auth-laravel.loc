@@ -12,6 +12,10 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
+use Illuminate\Auth\Events\PasswordReset;
+
 
 
 class UserController extends Controller
@@ -63,14 +67,9 @@ class UserController extends Controller
         'email '=> 'Wrong Email or Password'
         ]);
 
-
-
       //  dump($request->boolean('remember'));
-
        // dd($request->all());
-
-
-   
+ 
     }
 
     public function logout()
@@ -80,10 +79,48 @@ class UserController extends Controller
         return redirect('login');
     }
 
-  
-
-     public function dashboard()
+    public function dashboard()
     {
         return view('user.dashboard');
+    }
+
+
+    public function forgotPasswordStore(Request $request)
+    {
+         $request->validate(['email' => 'required|email']);
+ 
+        $status = Password::sendResetLink($request->only('email'));
+
+ 
+    return $status === Password::ResetLinkSent
+        ? back()->with(['success' => __($status)])
+        : back()->withErrors(['email' => __($status)]);
+    }
+
+
+    public function resetPasswordUpdate(Request $request)
+    {
+         $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:6|confirmed',
+        ]);
+ 
+        $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function (User $user, string $password) {
+            $user->forceFill([
+                'password' => $password
+            ])->setRememberToken(Str::random(60));
+ 
+            $user->save();
+ 
+            event(new PasswordReset($user));
+        }
+    );
+ 
+    return $status === Password::PasswordReset
+        ? redirect()->route('login')->with('success', __($status))
+        : back()->withErrors(['email' => [__($status)]]);
     }
 }
